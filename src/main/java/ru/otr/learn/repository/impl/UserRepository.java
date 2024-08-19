@@ -1,7 +1,6 @@
 package ru.otr.learn.repository.impl;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -11,6 +10,7 @@ import ru.otr.learn.repository.CrudRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class UserRepository implements CrudRepository<User> {
@@ -27,8 +27,8 @@ public class UserRepository implements CrudRepository<User> {
 	}
 
 	@Override
-	public @Nullable User findByName(String userName) {
-		return database.getUSERS().stream().filter(user -> userName.equals(user.getName())).findFirst().orElse(null);
+	public Optional<User> findByName(String userName) {
+		return database.getUSERS().stream().filter(user -> userName.equals(user.getName())).findFirst();
 	}
 
 	@Override

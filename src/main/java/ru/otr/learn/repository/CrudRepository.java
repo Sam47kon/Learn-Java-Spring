@@ -2,16 +2,15 @@ package ru.otr.learn.repository;
 
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 public interface CrudRepository<E> {
 
 	@NotNull
 	List<E> findAll();
 
-	@Nullable
-	E findByName(String name);
+	Optional<E> findByName(String name);
 
 	E create(E entity);
 

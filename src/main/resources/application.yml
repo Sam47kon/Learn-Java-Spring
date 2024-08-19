@@ -1,0 +1,32 @@
+# application.properties главнее
+# .yml==.yaml
+
+systemUser:
+  age: 28
+  web:
+    name: web
+  system:
+    name: system
+
+spring.profiles.active: prod
+
+database:
+  dialect: postgresql
+  url: postgresql://localhost:5432
+  user: postgre
+  password: 1234
+  driver: PostgresDriver
+  properties:
+    dbName: myDb
+    checkSQL: select 1
+  pools:
+    - poolSize: 10
+      maxPoolSize: 30
+      minPoolSize: 5
+      idleTimeout: 7200
+      maxIdleTime: 36000
+    - poolSize: 5
+      maxPoolSize: 10
+      minPoolSize: 2
+      idleTimeout: 900
+      maxIdleTime: 6000

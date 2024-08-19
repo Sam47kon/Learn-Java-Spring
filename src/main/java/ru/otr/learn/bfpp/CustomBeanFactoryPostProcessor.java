@@ -12,6 +12,6 @@ import org.springframework.stereotype.Component;
 public class CustomBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 	@Override
 	public void postProcessBeanFactory(@NotNull ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		System.out.println("BeanFactoryPostProcessor postProcessBeanFactory");
+		System.out.println("CustomBeanFactoryPostProcessor postProcessBeanFactory");
 	}
 }

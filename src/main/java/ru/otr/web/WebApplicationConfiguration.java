@@ -7,7 +7,7 @@ import ru.otr.learn.db.Database;
 import ru.otr.learn.db.IdGenerator;
 import ru.otr.learn.entity.SystemUser;
 
-@Profile("prod")
+@Profile("web")
 @Configuration
 public class WebApplicationConfiguration {
 
