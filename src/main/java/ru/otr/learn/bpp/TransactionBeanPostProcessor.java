@@ -1,5 +1,6 @@
 package ru.otr.learn.bpp;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.aop.AfterReturningAdvice;
 import org.springframework.aop.MethodBeforeAdvice;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+@Slf4j(topic = "ru.otr.learn.Transaction")
 @Component
 public class TransactionBeanPostProcessor implements BeanPostProcessor {
 
@@ -40,21 +42,21 @@ public class TransactionBeanPostProcessor implements BeanPostProcessor {
 	private static class TransactionAdvice implements MethodBeforeAdvice, AfterReturningAdvice {
 
 		@Override
-		public void before(@NotNull Method method, Object @NotNull [] args, Object target) throws Throwable {
+		public void before(@NotNull Method method, Object @NotNull [] args, Object target) {
 			if (!method.isAnnotationPresent(Transaction.class)) {
 				// Метод не помечен аннотацией
 				return;
 			}
-			System.out.println("Открыли транзакцию для: " + method.getName());
+			log.info("Открыли транзакцию для: {}", method.getName());
 		}
 
 		@Override
-		public void afterReturning(Object returnValue, @NotNull Method method, Object @NotNull [] args, Object target) throws Throwable {
+		public void afterReturning(Object returnValue, @NotNull Method method, Object @NotNull [] args, Object target) {
 			if (!method.isAnnotationPresent(Transaction.class)) {
 				// Метод не помечен аннотацией
 				return;
 			}
-			System.out.println("Закрыли транзакцию для: " + method.getName());
+			log.info("Закрыли транзакцию для: {}", method.getName());
 		}
 	}
 }

@@ -1,20 +1,26 @@
 package ru.otr.learn.bpp;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
+@Slf4j(topic = "ru.otr.learn.Performance")
 @Component
 public class PerformanceBeanPostProcessor implements BeanPostProcessor {
+	private static final String LOG_FIELD_NAME = "log";
 
 	private final Set<String> performanceBeans = new HashSet<>();
 
@@ -45,10 +51,25 @@ public class PerformanceBeanPostProcessor implements BeanPostProcessor {
 			if (!invocation.getMethod().isAnnotationPresent(Performance.class)) {
 				return invocation.proceed();
 			}
+
+			Logger logger = null;
+			if (null != invocation.getThis()) {
+				Class<?> clazz = invocation.getThis().getClass();
+				logger = Optional.ofNullable(ReflectionUtils.findField(clazz, LOG_FIELD_NAME, Logger.class))
+						.map(logField -> {
+							ReflectionUtils.makeAccessible(logField);
+							return (Logger) ReflectionUtils.getField(logField, clazz);
+						})
+						.orElse(null);
+			}
+			if (null == logger) {
+				logger = log;
+			}
+
 			long start = System.currentTimeMillis();
 			Object result = invocation.proceed();
 			long end = System.currentTimeMillis();
-			System.out.printf("[PERFORMANCE] Время выполнения метода [%s]: %d ms%n", invocation.getMethod().getName(), end - start);
+			logger.info("[PERFORMANCE] Время выполнения метода [{}]: {} ms", invocation.getMethod().getName(), end - start);
 			return result;
 		}
 	}

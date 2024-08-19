@@ -1,5 +1,4 @@
-# application.properties главнее
-# .yml==.yaml
+spring.profiles.active: prod
 
 systemUser:
   age: 28
@@ -8,10 +7,32 @@ systemUser:
   system:
     name: system
 
-spring.profiles.active: prod
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sam47kon
+    password: 1234
+    driverClassName: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    #database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    generate-ddl: true
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: false
+    hibernate:
+      naming:
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+      ddl-auto: create
+
 
 database:
-  dialect: postgresql
+  dialect: h2sql
   url: postgresql://localhost:5432
   user: postgre
   password: 1234
@@ -30,3 +51,13 @@ database:
       minPoolSize: 2
       idleTimeout: 900
       maxIdleTime: 6000
+
+# logback
+logging:
+  charset:
+    console: UTF-8
+    file: UTF-8
+  level:
+    root: info
+#  file:
+#    name: server.log

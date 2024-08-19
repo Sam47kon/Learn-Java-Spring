@@ -8,24 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "company")
+@Table(name = "chat")
 @Builder
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@ToString(includeFieldNames = false)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Company implements BaseEntity<Long> {
+public class Chat implements BaseEntity<Long> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
-	@Column(nullable = false)
+	@Column(unique = true, nullable = false)
 	String name;
 
 	@Builder.Default
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "company_user",
-			joinColumns = @JoinColumn(name = "company_id"),
-			inverseJoinColumns = @JoinColumn(name = "user_id"))
-	List<User> users = new ArrayList<>();
+	@OneToMany(mappedBy = "chat")
+	List<UserChat> userChats = new ArrayList<>();
 }

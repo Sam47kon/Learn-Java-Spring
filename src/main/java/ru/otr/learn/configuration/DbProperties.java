@@ -1,16 +1,13 @@
 package ru.otr.learn.configuration;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.experimental.FieldDefaults;
+import lombok.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 import java.util.Map;
 
-@Data
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @ConfigurationProperties(prefix = "database")
+@Value
 public class DbProperties {
 	String dialect;
 	String url;
@@ -20,10 +17,7 @@ public class DbProperties {
 	Map<String, Object> properties;
 	List<PoolProperties> pools;
 
-	public DbProperties() {
-	}
-
-	@Data
+	@Value
 	public static class PoolProperties {
 		int poolSize;
 		int maxPoolSize;
