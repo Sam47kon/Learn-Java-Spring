@@ -4,17 +4,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Component;
-import ru.otr.learn.db.javabased.Database;
-import ru.otr.learn.db.javabased.IdGenerator;
-import ru.otr.learn.entity.javabased.SystemUser;
+import ru.otr.learn.db.Database;
+import ru.otr.learn.db.IdGenerator;
+import ru.otr.learn.entity.SystemUser;
 import ru.otr.learn.repository.CrudRepository;
+import ru.otr.web.WebApplicationConfiguration;
 
 
 /*Для комбинации xml+java*/
 //@ImportResource("classpath:xml-based.xml")
 
 /* Для подключения других конфиг классов, например: в других пакетах (basePackages) или даже в других jar */
-//@Import()
+@Import(WebApplicationConfiguration.class)
 
 @Configuration
 @PropertySource(value = "classpath:application.properties")
@@ -24,7 +25,7 @@ import ru.otr.learn.repository.CrudRepository;
 		includeFilters = {
 				@Filter(type = FilterType.ANNOTATION, value = Component.class),
 				@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CrudRepository.class),
-				@Filter(type = FilterType.REGEX, pattern = "ru\\..+\\.javabased\\.+")
+				@Filter(type = FilterType.REGEX, pattern = "\\.bpp\\.+")
 		}
 )
 public class ApplicationConfiguration {
@@ -36,7 +37,7 @@ public class ApplicationConfiguration {
 	}
 
 	@Bean(name = "database3")
-	public Database database3(@Value("${systemUser.web.system}") String name) {
+	public Database database3(@Value("${systemUser.system.name}") String name) {
 		return new Database(new IdGenerator(), new SystemUser(name, 0));
 	}
 }

@@ -6,45 +6,24 @@ import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+@Component
 public class TransactionBeanPostProcessor implements BeanPostProcessor {
 
 	private final Set<String> transactionBeans = new HashSet<>();
-
-	// region Неправильно:
-	/*@Override
-	public Object postProcessBeforeInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
-		if (bean.getClass().isAnnotationPresent(Transaction.class)) {
-			// Заворачиваем в прокси
-			return Proxy.newProxyInstance(bean.getClass().getClassLoader(), bean.getClass().getInterfaces(), (proxy, method, args) -> {
-				System.out.println("Open transaction: " + method.getName());
-				try {
-					return method.invoke(bean, args);
-				} finally {
-					System.out.println("Close transaction: " + method.getName());
-				}
-			});
-		}
-		return BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
-	}
-
-	@Override
-	public Object postProcessAfterInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
-		return BeanPostProcessor.super.postProcessAfterInitialization(bean, beanName);
-	}*/
-	// endregion неправильно
 
 	@Override
 	public Object postProcessBeforeInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
 		if (Arrays.stream(bean.getClass().getDeclaredMethods()).anyMatch(method -> method.isAnnotationPresent(Transaction.class))) {
 			transactionBeans.add(beanName);
 		}
-		return bean;
+		return BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
 	}
 
 	@Override
