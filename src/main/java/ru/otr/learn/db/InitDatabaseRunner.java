@@ -25,7 +25,6 @@ public class InitDatabaseRunner {
 	private static final Random RANDOM = new Random();
 	UserService userService;
 	CompanyService companyService;
-	//CommandLineRunner runner;
 
 	@PostConstruct
 	public void init() {

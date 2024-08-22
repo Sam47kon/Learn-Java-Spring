@@ -35,13 +35,11 @@ public class ExampleWork implements ApplicationContextAware {
 
 	@Transactional
 	public void example_2() {
-		//UserService userService = context.getBean(UserService.class);
 		log.debug("userService.getAllUsers():\n\t{}{}", prettyList(userService.getAllUsers()), System.lineSeparator());
 	}
 
 	@Transactional
 	public void example_3() {
-		//CompanyService companyService = context.getBean(CompanyService.class);
 		log.debug("companyService.getAllCompanies():\n\t{}{}", prettyList(companyService.getAllCompanies()), System.lineSeparator());
 
 		log.debug("companyService.getCompanyByName(\"ОТР\") = {}{}", companyService.getCompanyByName("ОТР"), System.lineSeparator());
@@ -52,7 +50,7 @@ public class ExampleWork implements ApplicationContextAware {
 	public void example_4() {
 		log.debug("Ожидаем...");
 		log.info("userService.getUserByName(\"Илья\") = {}", userService.getUserByName("Илья"));
-		Thread.sleep(5_000);
+		Thread.sleep(1_000);
 		log.info("userService.getUserByName(\"Антон\") = {}", userService.getUserByName("Антон"));
 		log.debug("Подождали 5 секунд");
 	}

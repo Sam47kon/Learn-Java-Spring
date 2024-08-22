@@ -20,7 +20,7 @@ public class Chat implements BaseEntity<Long> {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
-	@Column(unique = true, nullable = false)
+	@Column(unique = true, nullable = false, length = 100)
 	String name;
 
 	@Builder.Default

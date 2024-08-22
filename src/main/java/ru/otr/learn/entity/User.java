@@ -25,7 +25,6 @@ public class User implements BaseEntity<Long> {
 	@Column(nullable = false)
 	int age;
 
-	@Column(nullable = true)
 	@Enumerated(EnumType.STRING)
 	Role role;
 
