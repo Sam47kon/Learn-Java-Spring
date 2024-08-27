@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import static ru.otr.learn.utils.Utils.executeNoThrows;
+
 @Slf4j
 @EntityScan
 @SpringBootApplication
@@ -14,17 +16,16 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class ApplicationRunner {
 
 	public static void main(String[] args) {
+		log.debug("Starting application");
+
 		ConfigurableApplicationContext context = SpringApplication.run(ApplicationRunner.class, args);
+		log.debug("Application context created");
 
 		ExampleWork work = context.getBean(ExampleWork.class);
-		work.example_1();
-		work.example_2();
-		work.example_3();
-		try {
-			work.example_4();
-		} catch (Exception e) {
-			log.error("Ошибка: {}", e.getMessage());
-		}
+		executeNoThrows(work::example_6_1);
+		executeNoThrows(work::example_6_2);
+		//executeNoThrows(work::example_6_3);
+		//executeNoThrows(work::example_6_4);
 
 		log.debug("Closing application context");
 		context.close();

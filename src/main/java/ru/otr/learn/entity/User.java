@@ -25,8 +25,9 @@ public class User implements BaseEntity<Long> {
 	@Column(nullable = false)
 	int age;
 
+	@Builder.Default
 	@Enumerated(EnumType.STRING)
-	Role role;
+	Role role = Role.DEV;
 
 	/*@ManyToMany(mappedBy = "users")
 	private List<Company> companies;*/

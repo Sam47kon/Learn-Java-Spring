@@ -1,5 +1,6 @@
 package ru.otr.learn.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Value
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @NonFinal
 @Slf4j
 @Service
@@ -27,10 +29,6 @@ public class CompanyService implements ApplicationEventPublisherAware {
 	CompanyRepository companyRepository;
 	@NonFinal
 	ApplicationEventPublisher applicationEventPublisher;
-
-	public CompanyService(@Autowired CompanyRepository companyRepository) {
-		this.companyRepository = companyRepository;
-	}
 
 	public @NotNull List<Company> getAllCompanies() {
 		return companyRepository.findAll();

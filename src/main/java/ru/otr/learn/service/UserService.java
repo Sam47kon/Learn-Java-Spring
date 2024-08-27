@@ -1,11 +1,11 @@
 package ru.otr.learn.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Value
+@RequiredArgsConstructor
 @NonFinal
 @Slf4j
 @Service
@@ -28,10 +29,6 @@ public class UserService implements ApplicationEventPublisherAware {
 	@NonFinal
 	ApplicationEventPublisher applicationEventPublisher;
 
-	public UserService(@Autowired UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
-
 	@Performance
 	public @NotNull List<User> getAllUsers() {
 		log.info("Получение всех пользователей...");
@@ -39,7 +36,7 @@ public class UserService implements ApplicationEventPublisherAware {
 	}
 
 
-	public @Nullable Optional<User> getUserByName(String userName) {
+	public Optional<User> getUserByName(String userName) {
 		return userRepository.findByName(userName).map(user -> {
 			applicationEventPublisher.publishEvent(new EntityEvent<>(user, OperationType.READ));
 			return user;
