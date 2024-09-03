@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import ru.otr.learn.bpp.Performance;
 import ru.otr.learn.entity.User;
 import ru.otr.learn.listener.entity.EntityEvent;
@@ -44,12 +47,19 @@ public class UserService implements ApplicationEventPublisherAware {
 	}
 
 	public User createUser(User user) {
+		/*if (TransactionSynchronizationManager.isCurrentTransactionReadOnly()) {
+			throw new UnsupportedOperationException("Невозможно выполнить операцию записи в read-only транзакции.");
+		}*/
 		User createdUser = userRepository.saveAndFlush(user);
 		applicationEventPublisher.publishEvent(new EntityEvent<>(createdUser, OperationType.CREATE));
 		return createdUser;
 	}
 
+	@Transactional(propagation = Propagation.MANDATORY)
 	public @Nullable User deleteByName(String userName) {
+		if (TransactionSynchronizationManager.isCurrentTransactionReadOnly()) {
+			throw new UnsupportedOperationException("Невозможно выполнить операцию записи в read-only транзакции.");
+		}
 		return userRepository.findByName(userName).map(user -> {
 			userRepository.delete(user);
 			applicationEventPublisher.publishEvent(new EntityEvent<>(user, OperationType.DELETE));

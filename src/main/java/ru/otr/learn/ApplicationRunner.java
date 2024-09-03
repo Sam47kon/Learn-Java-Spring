@@ -9,6 +9,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import static ru.otr.learn.utils.Utils.executeNoThrows;
 
+
 @Slf4j
 @EntityScan
 @SpringBootApplication
@@ -22,9 +23,9 @@ public class ApplicationRunner {
 		log.debug("Application context created");
 
 		ExampleWork work = context.getBean(ExampleWork.class);
-		executeNoThrows(work::example_6_1);
-		executeNoThrows(work::example_6_2);
-		//executeNoThrows(work::example_6_3);
+		//executeNoThrows(work::example_6_1);
+		//executeNoThrows(work::example_6_2);
+		executeNoThrows(work::example_6_3);
 		//executeNoThrows(work::example_6_4);
 
 		log.debug("Closing application context");

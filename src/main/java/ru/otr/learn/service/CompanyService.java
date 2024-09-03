@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import ru.otr.learn.dto.CompanyDto;
 import ru.otr.learn.entity.Company;
 import ru.otr.learn.listener.entity.EntityEvent;
@@ -47,7 +50,11 @@ public class CompanyService implements ApplicationEventPublisherAware {
 		return createdCompany;
 	}
 
+	@Transactional(propagation = Propagation.MANDATORY)
 	public @Nullable Company deleteCompanyByName(String companyName) {
+		if (TransactionSynchronizationManager.isCurrentTransactionReadOnly()) {
+			throw new UnsupportedOperationException("Невозможно выполнить операцию записи в read-only транзакции.");
+		}
 		return companyRepository.findByName(companyName).map(company -> {
 			companyRepository.delete(company);
 			applicationEventPublisher.publishEvent(new EntityEvent<>(company, OperationType.DELETE));

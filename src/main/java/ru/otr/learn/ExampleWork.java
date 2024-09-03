@@ -16,7 +16,6 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.otr.learn.configuration.DbProperties;
 import ru.otr.learn.entity.User;
@@ -98,11 +97,6 @@ public class ExampleWork implements ApplicationContextAware {
 	public void example_6_2() {
 		User createdUser = User.builder().name("Алина 2").age(27).build();
 		userService.createUser(createdUser);
-		//entityManager.persist(createdUser);
-
-		if (TransactionSynchronizationManager.isCurrentTransactionReadOnly()) {
-			throw new UnsupportedOperationException("Невозможно выполнить операцию записи в read-only транзакции.");
-		}
 
 		log.debug("Созданный пользователь: {}", createdUser);
 	}
