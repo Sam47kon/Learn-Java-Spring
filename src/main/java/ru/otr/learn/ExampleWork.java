@@ -246,7 +246,7 @@ public class ExampleWork implements ApplicationContextAware {
 	}
 
 	public void example_7_9_Slice() {
-		log.debug("findAllUsers:");
+		log.debug("findAllBy:");
 		Slice<User> slice = userRepository.findAllBy(PageRequest.of(0, 2, Sort.by("age").descending()));
 		log.debug("slice = {}\n\t{}", slice, slice.getContent());
 

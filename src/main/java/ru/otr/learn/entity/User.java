@@ -38,10 +38,9 @@ public class User implements BaseEntity<Long> {
 	Role role = Role.DEV;
 
 	@ToString.Exclude
-	@Builder.Default
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "company_id")
-	private Company company = null;
+	private Company company;
 
 	@Builder.Default
 	@OneToMany(mappedBy = "user")
