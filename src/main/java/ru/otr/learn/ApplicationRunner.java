@@ -23,10 +23,16 @@ public class ApplicationRunner {
 		log.debug("Application context created");
 
 		ExampleWork work = context.getBean(ExampleWork.class);
-		//executeNoThrows(work::example_6_1);
-		//executeNoThrows(work::example_6_2);
-		executeNoThrows(work::example_6_3);
-		//executeNoThrows(work::example_6_4);
+		executeNoThrows(work::example_7_1);
+		executeNoThrows(work::example_7_2_NamedQuery);
+		executeNoThrows(work::example_7_3_NativeQuery);
+		executeNoThrows(work::example_7_4_SimpleJpaQuery);
+		executeNoThrows(work::example_7_5_PartTreeJpaQuery);
+		executeNoThrows(work::example_7_6_Update);
+		executeNoThrows(work::example_7_7_DynamicSort);
+		executeNoThrows(work::example_7_8_Page);
+		executeNoThrows(work::example_7_9_Slice);
+		executeNoThrows(work::example_7_10_EntityGraph);
 
 		log.debug("Closing application context");
 		context.close();

@@ -3,6 +3,7 @@ package ru.otr.learn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +24,8 @@ public class Company implements BaseEntity<Long> {
 	String name;
 
 	@Builder.Default
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "company_user",
-			joinColumns = @JoinColumn(name = "company_id"),
-			inverseJoinColumns = @JoinColumn(name = "user_id"))
+	@BatchSize(size = 10)
+	@OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+	//@JoinColumn(name = "company_id")
 	List<User> users = new ArrayList<>();
 }

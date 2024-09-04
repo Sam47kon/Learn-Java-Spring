@@ -40,7 +40,7 @@ public class UserService implements ApplicationEventPublisherAware {
 
 
 	public Optional<User> getUserByName(String userName) {
-		return userRepository.findByName(userName).map(user -> {
+		return userRepository.findFirstByName(userName).map(user -> {
 			applicationEventPublisher.publishEvent(new EntityEvent<>(user, OperationType.READ));
 			return user;
 		});
@@ -60,7 +60,7 @@ public class UserService implements ApplicationEventPublisherAware {
 		if (TransactionSynchronizationManager.isCurrentTransactionReadOnly()) {
 			throw new UnsupportedOperationException("Невозможно выполнить операцию записи в read-only транзакции.");
 		}
-		return userRepository.findByName(userName).map(user -> {
+		return userRepository.findFirstByName(userName).map(user -> {
 			userRepository.delete(user);
 			applicationEventPublisher.publishEvent(new EntityEvent<>(user, OperationType.DELETE));
 			return user;

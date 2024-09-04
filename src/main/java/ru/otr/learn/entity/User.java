@@ -8,6 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@NamedQueries(
+		@NamedQuery(
+				name = "User.findByNameAndAgeGreaterThanNamed",
+				query = "select u from User u where u.name = :name and u.age > :age"
+				//query = "select u from User u where u.name = ?1 and u.age > ?2"
+		)
+)
+
 @Entity
 @Table(name = "users")
 @Builder
@@ -29,8 +37,11 @@ public class User implements BaseEntity<Long> {
 	@Enumerated(EnumType.STRING)
 	Role role = Role.DEV;
 
-	/*@ManyToMany(mappedBy = "users")
-	private List<Company> companies;*/
+	@ToString.Exclude
+	@Builder.Default
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "company_id")
+	private Company company = null;
 
 	@Builder.Default
 	@OneToMany(mappedBy = "user")

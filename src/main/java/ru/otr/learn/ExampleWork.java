@@ -11,6 +11,10 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionManager;
@@ -18,9 +22,17 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.otr.learn.configuration.DbProperties;
+import ru.otr.learn.entity.Company;
 import ru.otr.learn.entity.User;
+import ru.otr.learn.entity.User.Role;
+import ru.otr.learn.repository.impl.CompanyRepository;
+import ru.otr.learn.repository.impl.UserRepository;
 import ru.otr.learn.service.CompanyService;
 import ru.otr.learn.service.UserService;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static ru.otr.learn.utils.Utils.prettyList;
 
@@ -31,7 +43,10 @@ import static ru.otr.learn.utils.Utils.prettyList;
 public class ExampleWork implements ApplicationContextAware {
 
 	UserService userService;
+	UserRepository userRepository;
 	CompanyService companyService;
+	CompanyRepository companyRepository;
+
 	EntityManagerFactory entityManagerFactory;
 	TransactionManager transactionManager;
 	TransactionTemplate transactionTemplate;
@@ -135,6 +150,141 @@ public class ExampleWork implements ApplicationContextAware {
 		Thread.sleep(5_000);
 		log.debug("Подождали 5 секунд");
 		log.info("userService.getUserByName(\"Антон\") = {}", userService.getUserByName("Антон"));
+	}
+
+	public void example_7_1() {
+		log.debug("findById(1):");
+		Optional<User> userOpt = userRepository.findById(1L);
+		userOpt.ifPresentOrElse(
+				this::logUser,
+				this::logUserNotFound);
+		System.out.println();
+	}
+
+	public void example_7_2_NamedQuery() {
+		log.debug("NamedQuery: findByNameAndAgeGreaterThanNamed(\"Илья\", 25):");
+		Optional<User> userOpt = userRepository.findByNameAndAgeGreaterThanNamed("Илья", 25);
+		userOpt.ifPresentOrElse(
+				this::logUser,
+				this::logUserNotFound);
+		System.out.println();
+	}
+
+	public void example_7_3_NativeQuery() {
+		log.debug("NativeQuery: findByNameAndAgeGreaterThanNative(\"Илья\", 25):");
+		Optional<User> userOpt = userRepository.findByNameAndAgeGreaterThanNative("Илья", 25);
+		userOpt.ifPresentOrElse(
+				this::logUser,
+				this::logUserNotFound);
+		System.out.println();
+	}
+
+	public void example_7_4_SimpleJpaQuery() {
+		log.debug("SimpleJpaQuery: findByNameAndAgeGreaterThanSimple(\"Илья\", 25):");
+		Optional<User> userOpt = userRepository.findByNameAndAgeGreaterThanSimple("Илья", 25);
+		userOpt.ifPresentOrElse(
+				this::logUser,
+				this::logUserNotFound);
+		System.out.println();
+	}
+
+	public void example_7_5_PartTreeJpaQuery() {
+		log.debug("PartTreeJpaQuery: findByNameAndAgeGreaterThanEqual(\"Илья\", 25):");
+		Optional<User> userOpt = userRepository.findByNameAndAgeGreaterThanEqual("Илья", 25);
+		userOpt.ifPresentOrElse(
+				this::logUser,
+				this::logUserNotFound);
+		System.out.println();
+	}
+
+	@Transactional
+	public void example_7_6_Update() {
+		log.debug("findUsersByRole(Role.QA):");
+		List<User> usersQA = userRepository.findUsersByRole(Role.QA);
+		log.debug("usersQA = {}", usersQA);
+
+		log.debug("updateRole(Role.DEV, ids):");
+		int count = userRepository.updateRole(Role.DEV, usersQA.stream().map(User::getId).collect(Collectors.toList()));
+		log.debug("count = {}", count);
+
+		log.debug("ids findUsersByRole(Role.QA):");
+		List<User> usersQA2 = userRepository.findUsersByRole(Role.QA);
+		log.debug("usersQA2 = {}", usersQA2);
+
+		System.out.println();
+	}
+
+	public void example_7_7_DynamicSort() {
+		log.debug("findTop3ByRoleOrderByAgeDesc(Role.DEV):");
+		List<User> users = userRepository.findTop3ByRoleOrderByAgeDesc(Role.DEV);
+		log.debug("users = {}", users);
+
+		log.debug("findTop3ByRole(Role.DEV, Sort.by(\"age\").descending()):");
+		users = userRepository.findTop3ByRole(Role.DEV, Sort.by("age").descending());
+		log.debug("users = {}", users);
+
+		log.debug("findTop3ByRole(Role.DEV, Sort.sort(User.class).by(User::getAge).descending()):");
+		users = userRepository.findTop3ByRole(Role.DEV, Sort.sort(User.class).by(User::getAge).descending());
+		log.debug("users = {}", users);
+
+		System.out.println();
+	}
+
+	public void example_7_8_Page() {
+		log.debug("Все пользователи: \n\t{}", userRepository.findAll());
+
+		log.debug("findAll:");
+		Page<User> page = userRepository.findAll(PageRequest.of(0, 2, Sort.by("age").descending()));
+		log.debug("page = {}\n\t{}", page, page.getContent());
+
+		while (page.hasNext()) {
+			page = userRepository.findAll(page.nextPageable());
+			log.debug("page = {}\n\t{}", page, page.getContent());
+		}
+
+		System.out.println();
+	}
+
+	public void example_7_9_Slice() {
+		log.debug("findAllUsers:");
+		Slice<User> slice = userRepository.findAllBy(PageRequest.of(0, 2, Sort.by("age").descending()));
+		log.debug("slice = {}\n\t{}", slice, slice.getContent());
+
+		while (slice.hasNext()) {
+			slice = userRepository.findAllBy(slice.nextPageable());
+			log.debug("slice = {}\n\t{}", slice, slice.getContent());
+		}
+
+		System.out.println();
+	}
+
+	@Transactional
+	public void example_7_10_EntityGraph() {
+		log.debug("findAll:");
+		Page<Company> page = companyRepository.findAll(PageRequest.of(0, 2, Sort.sort(Company.class).by(Company::getId)));
+		log.debug("page = {}", page);
+
+		log.debug("page.getContent():");
+		log.debug("content = \n\t{}", page.getContent());
+
+		while (page.hasNext()) {
+			log.debug("findAll:");
+			page = companyRepository.findAll(page.nextPageable());
+			log.debug("page = {}", page);
+
+			log.debug("page.getContent():");
+			log.debug("content = \n\t{}", page.getContent());
+		}
+
+		System.out.println();
+	}
+
+	private void logUser(User user) {
+		log.debug("user = {}", user);
+	}
+
+	private void logUserNotFound() {
+		log.debug("Пользователь не найден");
 	}
 
 	@Override
