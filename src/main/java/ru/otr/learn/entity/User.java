@@ -3,6 +3,7 @@ package ru.otr.learn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.otr.learn.entity.chat.UserChat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +21,12 @@ import java.util.Random;
 @Table(name = "users")
 @Builder
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(includeFieldNames = false)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class User implements BaseEntity<Long> {
+public class User extends AuditingEntity<Long> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;

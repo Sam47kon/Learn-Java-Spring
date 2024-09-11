@@ -1,8 +1,10 @@
-package ru.otr.learn.entity;
+package ru.otr.learn.entity.chat;
 
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.otr.learn.entity.BaseEntity;
+import ru.otr.learn.entity.User;
 
 @Entity
 @Table(name = "users_chat")

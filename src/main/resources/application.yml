@@ -32,7 +32,7 @@ spring:
 
 
 database:
-  dialect: h2sql
+  dialect: org.hibernate.dialect.PostgreSQLDialect
   url: postgresql://localhost:5432
   user: postgre
   password: 1234

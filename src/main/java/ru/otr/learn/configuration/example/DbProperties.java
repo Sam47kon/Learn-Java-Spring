@@ -1,4 +1,4 @@
-package ru.otr.learn.configuration;
+package ru.otr.learn.configuration.example;
 
 import lombok.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;

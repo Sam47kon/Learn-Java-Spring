@@ -21,7 +21,7 @@ import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
-import ru.otr.learn.configuration.DbProperties;
+import ru.otr.learn.configuration.example.DbProperties;
 import ru.otr.learn.entity.Company;
 import ru.otr.learn.entity.User;
 import ru.otr.learn.entity.User.Role;

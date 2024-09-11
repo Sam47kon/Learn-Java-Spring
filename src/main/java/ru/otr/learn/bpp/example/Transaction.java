@@ -1,4 +1,4 @@
-package ru.otr.learn.bpp;
+package ru.otr.learn.bpp.example;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
