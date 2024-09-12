@@ -13,7 +13,7 @@ public class UserReadMapper implements Mapper<User, UserReadDto> {
 	private final CompanyReadMapper companyReadMapper;
 
 	@Override
-	public UserReadDto map(@NotNull User from) {
+	public @NotNull UserReadDto map(@NotNull User from) {
 		return UserReadDto.builder()
 				.id(from.getId())
 				.name(from.getName())

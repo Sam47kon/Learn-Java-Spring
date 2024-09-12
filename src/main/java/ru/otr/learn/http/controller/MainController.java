@@ -34,7 +34,6 @@ public class MainController {
 							 HttpServletResponse response) {
 		String acceptHeader = request.getHeader(ACCEPT);
 		Cookie[] cookies = request.getCookies();
-
 		modelAndView.setViewName("start-page");
 		return modelAndView;
 	}

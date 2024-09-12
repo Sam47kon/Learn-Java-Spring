@@ -5,6 +5,6 @@
     <title>Start Page</title>
 </head>
 <body>
-User id: ${requestScope.user.id}
+User id: ${requestScope.user.role}
 </body>
 </html>

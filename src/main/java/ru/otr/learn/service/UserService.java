@@ -37,9 +37,12 @@ public class UserService implements ApplicationEventPublisherAware {
 	ApplicationEventPublisher applicationEventPublisher;
 
 	@Performance
-	public @NotNull List<User> getAllUsers() {
+	public @NotNull List<UserReadDto> getAllUsers() {
 		log.info("Получение всех пользователей...");
-		return userRepository.findAll();
+		List<User> users = userRepository.findAll();
+		return users.stream()
+				.map(userReadMapper::map)
+				.toList();
 	}
 
 	public Optional<UserReadDto> getUserById(Long id) {
@@ -78,14 +81,15 @@ public class UserService implements ApplicationEventPublisherAware {
 
 	@Transactional
 	public boolean deleteUserById(Long id) {
-		return userRepository.findById(id).map(user -> {
-			userRepository.delete(user);
-			applicationEventPublisher.publishEvent(new EntityEvent<>(user, OperationType.DELETE));
-			return true;
-		}).orElseGet(() -> {
-			log.error("Пользователь с id {} не найден", id);
-			return false;
-		});
+		return userRepository.findById(id)
+				.map(user -> {
+					userRepository.delete(user);
+					applicationEventPublisher.publishEvent(new EntityEvent<>(user, OperationType.DELETE));
+					return true;
+				}).orElseGet(() -> {
+					log.error("Пользователь с id {} не найден", id);
+					return false;
+				});
 	}
 
 	@Override

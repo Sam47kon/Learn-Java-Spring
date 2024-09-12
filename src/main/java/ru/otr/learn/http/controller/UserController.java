@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.otr.learn.dto.UserCreateEditDto;
 import ru.otr.learn.dto.UserReadDto;
-import ru.otr.learn.entity.User;
 import ru.otr.learn.exception.UserNotFoundException;
 import ru.otr.learn.mapper.UserReadMapper;
 import ru.otr.learn.service.UserService;
@@ -28,11 +27,7 @@ public class UserController {
 	// http://localhost:8080/users
 	@GetMapping
 	public ResponseEntity<List<UserReadDto>> getAllUsers() {
-		List<User> users = userService.getAllUsers();
-		List<UserReadDto> usersResult = users.stream()
-				.map(userReadMapper::map)
-				.toList();
-		return ResponseEntity.ok(usersResult);
+		return ResponseEntity.ok(userService.getAllUsers());
 	}
 
 	// http://localhost:8080/users/1
