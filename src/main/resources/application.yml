@@ -8,6 +8,10 @@ systemUser:
     name: system
 
 spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
   datasource:
     url: jdbc:h2:mem:testdb
     username: sam47kon

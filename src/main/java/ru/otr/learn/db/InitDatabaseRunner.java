@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import ru.otr.learn.entity.Company;
 import ru.otr.learn.entity.User;
 import ru.otr.learn.entity.User.Role;
+import ru.otr.learn.repository.impl.UserRepository;
 import ru.otr.learn.service.CompanyService;
-import ru.otr.learn.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.Random;
 @Component
 public class InitDatabaseRunner {
 	private static final Random RANDOM = new Random();
-	UserService userService;
+	UserRepository userRepository;
 	CompanyService companyService;
 
 	@PostConstruct
@@ -57,7 +57,7 @@ public class InitDatabaseRunner {
 				.age(age)
 				.role(role)
 				.build();
-		user = userService.createUser(user);
+		user = userRepository.saveAndFlush(user);
 		log.info("Создан user {}", user);
 		users.add(user);
 	}
@@ -72,11 +72,16 @@ public class InitDatabaseRunner {
 	}
 
 	private void createCompany(String name, List<User> users, int from, int to) {
+		List<User> someUsers = getUsers(users, from, to);
 		Company company = Company.builder()
 				.name(name)
-				.users(getUsers(users, from, to))
+				.users(someUsers)
 				.build();
 		Company createdCompany = companyService.createCompany(company);
+		someUsers.forEach(user -> {
+			user.setCompany(createdCompany);
+			userRepository.saveAndFlush(user);
+		});
 		log.info("Создана company {}", createdCompany);
 	}
 

@@ -5,17 +5,18 @@ import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import ru.otr.learn.bpp.Performance;
+import ru.otr.learn.dto.UserCreateEditDto;
+import ru.otr.learn.dto.UserReadDto;
 import ru.otr.learn.entity.User;
 import ru.otr.learn.listener.entity.EntityEvent;
 import ru.otr.learn.listener.entity.OperationType;
+import ru.otr.learn.mapper.UserCreateEditMapper;
+import ru.otr.learn.mapper.UserReadMapper;
 import ru.otr.learn.repository.impl.UserRepository;
 
 import java.util.List;
@@ -26,9 +27,12 @@ import java.util.Optional;
 @NonFinal
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 public class UserService implements ApplicationEventPublisherAware {
 
 	UserRepository userRepository;
+	UserReadMapper userReadMapper;
+	UserCreateEditMapper userCreateEditMapper;
 	@NonFinal
 	ApplicationEventPublisher applicationEventPublisher;
 
@@ -38,33 +42,50 @@ public class UserService implements ApplicationEventPublisherAware {
 		return userRepository.findAll();
 	}
 
+	public Optional<UserReadDto> getUserById(Long id) {
+		return userRepository.findById(id).map(userReadMapper::map);
+	}
 
-	public Optional<User> getUserByName(String userName) {
+	public Optional<UserReadDto> getUserByName(String userName) {
 		return userRepository.findFirstByName(userName).map(user -> {
 			applicationEventPublisher.publishEvent(new EntityEvent<>(user, OperationType.READ));
-			return user;
+			return userReadMapper.map(user);
 		});
 	}
 
-	public User createUser(User user) {
-		/*if (TransactionSynchronizationManager.isCurrentTransactionReadOnly()) {
-			throw new UnsupportedOperationException("Невозможно выполнить операцию записи в read-only транзакции.");
-		}*/
-		User createdUser = userRepository.saveAndFlush(user);
-		applicationEventPublisher.publishEvent(new EntityEvent<>(createdUser, OperationType.CREATE));
-		return createdUser;
+	@Transactional
+	public UserReadDto createUser(UserCreateEditDto user) {
+		return Optional.of(user)
+				.map(userCreateEditMapper::map)
+				.map(entity -> {
+					User createdUser = userRepository.saveAndFlush(entity);
+					applicationEventPublisher.publishEvent(new EntityEvent<>(createdUser, OperationType.CREATE));
+					return userReadMapper.map(createdUser);
+				})
+				.orElseThrow();
 	}
 
-	@Transactional(propagation = Propagation.MANDATORY)
-	public @Nullable User deleteByName(String userName) {
-		if (TransactionSynchronizationManager.isCurrentTransactionReadOnly()) {
-			throw new UnsupportedOperationException("Невозможно выполнить операцию записи в read-only транзакции.");
-		}
-		return userRepository.findFirstByName(userName).map(user -> {
+	@Transactional
+	public Optional<UserReadDto> updateUser(Long id, UserCreateEditDto userDto) {
+		return userRepository.findById(id)
+				.map(user -> userCreateEditMapper.map(userDto, user))
+				.map(entity -> {
+					User updatedUser = userRepository.saveAndFlush(entity);
+					applicationEventPublisher.publishEvent(new EntityEvent<>(updatedUser, OperationType.UPDATE));
+					return userReadMapper.map(updatedUser);
+				});
+	}
+
+	@Transactional
+	public boolean deleteUserById(Long id) {
+		return userRepository.findById(id).map(user -> {
 			userRepository.delete(user);
 			applicationEventPublisher.publishEvent(new EntityEvent<>(user, OperationType.DELETE));
-			return user;
-		}).orElse(null);
+			return true;
+		}).orElseGet(() -> {
+			log.error("Пользователь с id {} не найден", id);
+			return false;
+		});
 	}
 
 	@Override

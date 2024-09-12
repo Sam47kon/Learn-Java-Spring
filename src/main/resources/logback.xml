@@ -8,5 +8,4 @@
 	</root>
 
 	<logger name="ru.otr.learn.ApplicationRunner" level="DEBUG"/>
-	<logger name="ru.otr.learn.ExampleWork" level="DEBUG"/>
 </configuration>
