@@ -1,49 +1,45 @@
 package ru.otr.learn.http.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.jetbrains.annotations.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import ru.otr.learn.service.CompanyService;
 
-import static org.springframework.http.HttpHeaders.*;
-
+@AllArgsConstructor
+@Slf4j
 @Controller
 @RequestMapping
 public class MainController {
 
-	// http://localhost:8080/info
-	//@GetMapping("/info/{id}")
-	@GetMapping("/info")
-	public ModelAndView info(@NotNull ModelAndView modelAndView,
-							 // @PathVariable(value = "id", required = false) int id,
-							 @RequestParam(value = "name", required = false) String name,
-							 @RequestHeader(value = USER_AGENT, required = false) String userAgent,
-							 @RequestHeader(value = ACCEPT, required = false) String accept,
-							 @RequestHeader(value = ACCEPT_LANGUAGE, required = false) String acceptLanguage,
-							 @RequestHeader(value = ACCEPT_CHARSET, required = false) String acceptCharset,
-							 @RequestHeader(value = ACCEPT_ENCODING, required = false) String acceptEncoding,
-							 @RequestHeader(value = COOKIE, required = false) String cookie,
-							 HttpServletRequest request,
-							 HttpServletResponse response) {
-		String acceptHeader = request.getHeader(ACCEPT);
-		Cookie[] cookies = request.getCookies();
-		modelAndView.setViewName("start-page");
-		return modelAndView;
+	public static final String SESSION_ID = "sessionId";
+
+	private final CompanyService companyService;
+
+	// http://localhost:8080/
+	@GetMapping
+	public String startPage(ModelAndView modelAndView,
+							Model model,
+							HttpServletRequest request,
+							HttpServletResponse response) {
+		String sessionId = request.getSession().getId();
+		log.debug("Session ID: {}", sessionId);
+		request.getSession().setAttribute(SESSION_ID, sessionId);
+		model.addAttribute(SESSION_ID, sessionId);
+		return "main/start-page";
 	}
 
-	// http://localhost:8080/start-page
-	@GetMapping("/start-page")
-	public String hello(ModelAndView modelAndView,
-						Model model,
-						HttpServletRequest request,
-						HttpServletResponse response) {
-		return "start-page";
+	@PostMapping
+	public String toLoginPage(ModelAndView modelAndView,
+							  Model model,
+							  HttpServletRequest request,
+							  HttpServletResponse response) {
+		return "redirect:/login";
 	}
 }

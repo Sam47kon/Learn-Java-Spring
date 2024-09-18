@@ -1,4 +1,4 @@
-package ru.otr.learn.http.advice;
+package ru.otr.learn.http.handler;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;

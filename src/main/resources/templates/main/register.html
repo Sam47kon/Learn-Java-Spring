@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+</head>
+<body>
+
+<div>
+    <h1>Регистрация нового пользователя</h1>
+
+    <!-- Форма для регистрации пользователя -->
+    <form th:action="@{/users/register}" method="post" th:object="${user}">
+        <label for="login">Логин:</label>
+        <input type="text" id="login" name="login" th:field="*{login}" required/><br>
+
+        <label for="name">Имя:</label>
+        <input type="text" id="name" name="name" th:field="*{name}" required/><br>
+
+        <label for="age">Возраст:</label>
+        <input type="number" id="age" name="age" th:field="*{age}" required/><br>
+
+        <label for="birthDate">Дата рождения:</label>
+        <input type="date" id="birthDate" name="birthDate" th:field="*{birthDate}" required/><br>
+
+        <div th:each="role : ${roles}">
+            <input type="radio" th:id="${role}" name="role" th:value="${role}" th:checked="${user.role == role}"/>
+            <label th:for="${role}" th:text="${role}"/>
+        </div>
+        <br>
+
+        <div>
+            <label for="company">Компания:
+                <select id="company" name="companyId">
+                    <option th:each="company : ${companies}"
+                            th:value="${company.id}"
+                            th:selected="${user.companyId == company.id}"
+                            th:text="${company.name}"/>
+                </select>
+            </label>
+        </div>
+        <br>
+
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+
+    <div th:if="${errors}">
+        <p style="color: red" th:each="error : ${errors}" th:text="${error.defaultMessage}"/>
+    </div>
+</div>
+
+</body>
+</html>

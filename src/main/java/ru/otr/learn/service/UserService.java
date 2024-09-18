@@ -41,29 +41,36 @@ public class UserService implements ApplicationEventPublisherAware {
 		log.info("Получение всех пользователей...");
 		List<User> users = userRepository.findAll();
 		return users.stream()
-				.map(userReadMapper::map)
+				.map(userReadMapper::transform)
 				.toList();
 	}
 
 	public Optional<UserReadDto> getUserById(Long id) {
-		return userRepository.findById(id).map(userReadMapper::map);
+		return userRepository.findById(id).map(userReadMapper::transform);
+	}
+
+	public Optional<UserReadDto> getUserByLogin(String login) {
+		return userRepository.findByLogin(login).map(user -> {
+			applicationEventPublisher.publishEvent(new EntityEvent<>(user, OperationType.READ));
+			return userReadMapper.transform(user);
+		});
 	}
 
 	public Optional<UserReadDto> getUserByName(String userName) {
 		return userRepository.findFirstByName(userName).map(user -> {
 			applicationEventPublisher.publishEvent(new EntityEvent<>(user, OperationType.READ));
-			return userReadMapper.map(user);
+			return userReadMapper.transform(user);
 		});
 	}
 
 	@Transactional
 	public UserReadDto createUser(UserCreateEditDto user) {
 		return Optional.of(user)
-				.map(userCreateEditMapper::map)
+				.map(userCreateEditMapper::transform)
 				.map(entity -> {
 					User createdUser = userRepository.saveAndFlush(entity);
 					applicationEventPublisher.publishEvent(new EntityEvent<>(createdUser, OperationType.CREATE));
-					return userReadMapper.map(createdUser);
+					return userReadMapper.transform(createdUser);
 				})
 				.orElseThrow();
 	}
@@ -71,11 +78,11 @@ public class UserService implements ApplicationEventPublisherAware {
 	@Transactional
 	public Optional<UserReadDto> updateUser(Long id, UserCreateEditDto userDto) {
 		return userRepository.findById(id)
-				.map(user -> userCreateEditMapper.map(userDto, user))
+				.map(user -> userCreateEditMapper.transform(userDto, user))
 				.map(entity -> {
 					User updatedUser = userRepository.saveAndFlush(entity);
 					applicationEventPublisher.publishEvent(new EntityEvent<>(updatedUser, OperationType.UPDATE));
-					return userReadMapper.map(updatedUser);
+					return userReadMapper.transform(updatedUser);
 				});
 	}
 

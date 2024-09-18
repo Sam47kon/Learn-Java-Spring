@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль пользователя</title>
+</head>
+<body>
+
+<div>
+    <h1 th:text="|Привет, ${user.name}!|"/>
+    <p th:text="|ID: ${user.getId()}|"></p>
+    <p th:text="|Логин: ${user.getLogin()}|"/>
+    <p th:text="|Возраст: ${user.age}|">age</p>
+    <p th:text="|Дата рождения: ${user.birthDate}|"></p>
+    <p th:text="|Роль: ${user.role}|"></p>
+
+    <div id="editUserDiv">
+        <!-- Кнопка редактирования, при нажатии которой отображается форма -->
+        <button type="button" onclick="document.getElementById('editForm').style.display='block'">Редактировать</button>
+
+        <!-- Форма для редактирования пользователя -->
+        <form id="editForm" th:action="@{/users/{id}/edit(id=${user.id})}" method="post" style="display:none">
+            <label for="login">Логин:</label>
+            <input type="text" id="login" name="login" th:value="${user.login}"/><br>
+
+            <label for="name">Имя:</label>
+            <input type="text" id="name" name="name" th:value="${user.name}"/><br>
+
+            <label for="age">Возраст:</label>
+            <input type="number" id="age" name="age" th:value="${user.age}"/><br>
+
+            <label for="birthDate">Дата рождения:</label>
+            <input type="date" id="birthDate" name="birthDate" th:value="${user.birthDate}"/><br>
+
+            <div th:each="role : ${roles}">
+                <input type="radio" th:id="${role}" name="role" th:value="${role}" th:checked="${user.role == role}"/>
+                <label th:for="${role}" th:text="${role}">Роль</label>
+            </div>
+            <br>
+
+            <div>
+                <label for="company">Компания:
+                    <select id="company" name="companyId">
+                        <option th:each="company : ${companies}"
+                                th:value="${company.id}"
+                                th:selected="${user.company == null ? false : user.company.id == company.id}"
+                                th:text="${company.name}"/>
+                    </select>
+                </label>
+            </div>
+            <br>
+
+            <button type="submit">Сохранить</button>
+        </form>
+        <br>
+
+        <form th:action="@{/users/{id}/delete(id=${user.id})}" method="post">
+            <button type="submit">Удалить пользователя</button>
+        </form>
+    </div>
+
+    <div>
+        <a th:href="@{/users}">Все пользователи</a>
+    </div>
+
+    <div>
+        <a th:href="@{/logout}">Выход</a>
+    </div>
+</div>
+</body>
+</html>

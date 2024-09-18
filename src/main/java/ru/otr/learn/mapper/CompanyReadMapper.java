@@ -9,7 +9,7 @@ import ru.otr.learn.entity.Company;
 public class CompanyReadMapper implements Mapper<Company, CompanyReadDto> {
 
 	@Override
-	public CompanyReadDto map(@Nullable Company company) {
+	public CompanyReadDto transform(@Nullable Company company) {
 		if (null == company) {
 			return null;
 		}

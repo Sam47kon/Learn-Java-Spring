@@ -1,86 +1,96 @@
 package ru.otr.learn.http.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.otr.learn.dto.UserCreateEditDto;
 import ru.otr.learn.dto.UserReadDto;
+import ru.otr.learn.entity.User;
 import ru.otr.learn.exception.UserNotFoundException;
-import ru.otr.learn.mapper.UserReadMapper;
+import ru.otr.learn.service.CompanyService;
 import ru.otr.learn.service.UserService;
+import ru.otr.learn.utils.Utils;
 
 import java.util.List;
-import java.util.Optional;
 
+@Slf4j
 @AllArgsConstructor
 @Controller
 @RequestMapping("/users")
 public class UserController {
 
+	public static final String USERS = "users";
+	public static final String USERS_PAGE = "user/users-page";
+	public static final String USER = "user";
+	public static final String USER_PAGE = "user/user-page";
+	public static final String USER_NOT_FOUND_PAGE = "user/user-not-found";
+
 	private final UserService userService;
-	private final UserReadMapper userReadMapper;
+	private final CompanyService companyService;
 
 	// http://localhost:8080/users
 	@GetMapping
-	public ResponseEntity<List<UserReadDto>> getAllUsers() {
-		return ResponseEntity.ok(userService.getAllUsers());
+	public String getAllUsers(Model model) {
+		List<UserReadDto> users = userService.getAllUsers();
+		model.addAttribute(USERS, users);
+		return USERS_PAGE;
 	}
 
 	// http://localhost:8080/users/1
 	@GetMapping("/{id}")
-	public ResponseEntity<UserReadDto> getUserById(@PathVariable("id") Long id, Model model) {
-		Optional<UserReadDto> user = userService.getUserById(id);
-		if (user.isEmpty()) {
-			throw new UserNotFoundException(id);
-		}
-		return ResponseEntity.ok(user.get());
-	}
+	public ModelAndView findById(ModelAndView modelAndView, @PathVariable("id") Long id, HttpServletRequest request) {
+		log.debug("Session ID: {}", request.getSession().getId());
 
-	// http://localhost:8080/users/?id=1&name=%D0%98%D0%BB%D1%8C%D1%8F&age=28&role=DEV
-	@GetMapping("/")
-	public ModelAndView getUser(ModelAndView modelAndView, @ModelAttribute UserReadDto userReadDto, Model model) {
-		Optional<UserReadDto> user = userService.getUserById(userReadDto.getId());
-		if (user.isEmpty()) {
-			modelAndView.setViewName("user-not-found");
-		} else {
-			modelAndView.setViewName("user");
-			modelAndView.addObject("user", user.get());
-		}
+		userService.getUserById(id).ifPresentOrElse(user -> {
+			modelAndView.setViewName(USER_PAGE);
+			modelAndView.addObject(USER, user);
+			modelAndView.addObject("roles", User.Role.values());
+			modelAndView.addObject("companies", companyService.getAllCompanies());
+		}, () -> {
+			modelAndView.setViewName(USER_NOT_FOUND_PAGE);
+			modelAndView.addObject("userId", id);
+		});
 		return modelAndView;
 	}
 
-	// http://localhost:8080/users/by-name/?name=%D0%98%D0%BB%D1%8C%D1%8F
-	@GetMapping("/by-name/")
-	public ModelAndView getUserByName(@RequestParam("name") String name, Model model) {
-		Optional<UserReadDto> user = userService.getUserByName(name);
-		if (user.isEmpty()) {
-			return new ModelAndView("user-not-found");
-		}
-		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("user");
-		modelAndView.addObject("user", user.get());
-		return modelAndView;
+	// http://localhost:8080/users/register
+	@GetMapping("/register")
+	public String createUser(Model model, @ModelAttribute(USER) UserCreateEditDto user) {
+		model.addAttribute(USER, user);
+		model.addAttribute("roles", User.Role.values());
+		model.addAttribute("companies", companyService.getAllCompanies());
+		return "main/register";
 	}
 
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public String createUser(@ModelAttribute UserCreateEditDto userReadDto) {
+	@PostMapping("/register")
+	public String createUser(@ModelAttribute @Validated UserCreateEditDto userReadDto,
+							 BindingResult bindingResult, // Ставить перед RedirectAttributes
+							 RedirectAttributes redirectAttributes) {
+		if (bindingResult.hasErrors()) {
+			log.debug("Binding errors: {}", Utils.prettyList(bindingResult.getAllErrors()));
+			redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
+			redirectAttributes.addFlashAttribute(USER, userReadDto);
+			return "redirect:/users/register";
+		}
 		UserReadDto user = userService.createUser(userReadDto);
 		return "redirect:/users/" + user.getId();
 	}
 
-	@PutMapping("/{id}")
+	@PostMapping("/{id}/edit")
 	public String updateUser(@PathVariable("id") Long id, @ModelAttribute UserCreateEditDto userCreateEditDto) {
 		return userService.updateUser(id, userCreateEditDto)
 				.map(user -> "redirect:/users/" + user.getId())
 				.orElseThrow(() -> new UserNotFoundException(id));
 	}
 
-	@DeleteMapping("/{id}")
+	@PostMapping("/{id}/delete")
 	public String deleteByName(@PathVariable("id") Long id) {
 		if (!userService.deleteUserById(id)) {
 			throw new UserNotFoundException(id);

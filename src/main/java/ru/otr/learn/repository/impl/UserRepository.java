@@ -51,5 +51,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	Slice<User> findAllBy(Pageable pageable);
 
 	Optional<User> findFirstByName(String userName);
+
+	Optional<User> findByLogin(String login);
 	// endregion
 }

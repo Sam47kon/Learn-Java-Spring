@@ -1,9 +1,9 @@
 package ru.otr.learn.mapper;
 
 public interface Mapper<From, To> {
-	To map(From from);
+	To transform(From from);
 
-	default To map(From from, To to) {
+	default To transform(From from, To to) {
 		return to;
 	}
 }

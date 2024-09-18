@@ -17,19 +17,23 @@ public class UserCreateEditMapper implements Mapper<UserCreateEditDto, User> {
 	private final CompanyRepository companyRepository;
 
 	@Override
-	public User map(@NotNull UserCreateEditDto from) {
+	public User transform(@NotNull UserCreateEditDto from) {
 		return User.builder()
+				.login(from.getLogin())
 				.name(from.getName())
 				.age(from.getAge())
+				.birthDate(from.getBirthDate())
 				.role(from.getRole())
 				.company(getCompany(from.getCompanyId()))
 				.build();
 	}
 
 	@Override
-	public User map(@NotNull UserCreateEditDto userCreateEditDto, @NotNull User user) {
+	public User transform(@NotNull UserCreateEditDto userCreateEditDto, @NotNull User user) {
+		user.setLogin(userCreateEditDto.getLogin());
 		user.setName(userCreateEditDto.getName());
 		user.setAge(userCreateEditDto.getAge());
+		user.setBirthDate(userCreateEditDto.getBirthDate());
 		user.setRole(userCreateEditDto.getRole());
 		user.setCompany(getCompany(userCreateEditDto.getCompanyId()));
 		return user;

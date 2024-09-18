@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static ru.otr.learn.utils.Utils.getRandomDate;
+
 @Slf4j
 @Value
 @NonFinal
@@ -34,27 +36,29 @@ public class InitDatabaseRunner {
 
 	private @NotNull List<User> initUsers() {
 		List<User> users = new ArrayList<>();
-		createUser(users, "Илья", 28, Role.DEV);
-		createUser(users, "Никита", 29, Role.MAN);
-		createUser(users, "Алина", 30, Role.QA);
-		createUser(users, "Игорь", 47, Role.DEV);
-		createUser(users, "Антон", 48, Role.MAN);
-		createUser(users, "Елена", 50, Role.QA);
-		createUser(users, "Николай", 31, Role.DEV);
-		createUser(users, "Александр", 32, Role.MAN);
-		createUser(users, "Анатолий", 33, Role.QA);
-		createUser(users, "Ирина", 21, Role.DEV);
-		createUser(users, "Григорий", 22, Role.MAN);
-		createUser(users, "Сергей", 23, Role.QA);
+		createUser(users, "sam47kon", "Илья", 28, Role.DEV);
+		createUser(users, "nikita", "Никита", 29, Role.MAN);
+		createUser(users, "alina", "Алина", 30, Role.QA);
+		createUser(users, "igor", "Игорь", 47, Role.DEV);
+		createUser(users, "anton", "Антон", 48, Role.MAN);
+		createUser(users, "elena", "Елена", 50, Role.QA);
+		createUser(users, "nikolay", "Николай", 31, Role.DEV);
+		createUser(users, "alexandr", "Александр", 32, Role.MAN);
+		createUser(users, "anatoly", "Анатолий", 33, Role.QA);
+		createUser(users, "irina", "Ирина", 21, Role.DEV);
+		createUser(users, "grigory", "Григорий", 22, Role.MAN);
+		createUser(users, "sergey", "Сергей", 23, Role.QA);
 
 		log.info("Таблица USER наполнена");
 		return users;
 	}
 
-	private void createUser(@NotNull List<User> users, String name, int age, Role role) {
+	private void createUser(@NotNull List<User> users, String login, String name, int age, Role role) {
 		User user = User.builder()
+				.login(login)
 				.name(name)
 				.age(age)
+				.birthDate(getRandomDate())
 				.role(role)
 				.build();
 		user = userRepository.saveAndFlush(user);

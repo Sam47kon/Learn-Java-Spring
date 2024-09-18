@@ -13,13 +13,15 @@ public class UserReadMapper implements Mapper<User, UserReadDto> {
 	private final CompanyReadMapper companyReadMapper;
 
 	@Override
-	public @NotNull UserReadDto map(@NotNull User from) {
+	public @NotNull UserReadDto transform(@NotNull User from) {
 		return UserReadDto.builder()
 				.id(from.getId())
+				.login(from.getLogin())
 				.name(from.getName())
 				.age(from.getAge())
+				.birthDate(from.getBirthDate())
 				.role(from.getRole())
-				.company(companyReadMapper.map(from.getCompany()))
+				.company(companyReadMapper.transform(from.getCompany()))
 				.build();
 	}
 }

@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.otr.learn.entity.chat.UserChat;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -30,10 +31,18 @@ public class User extends AuditingEntity<Long> {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
+
+	@Column(nullable = false, unique = true)
+	String login;
+
 	@Column(nullable = false)
 	String name;
+
 	@Column(nullable = false)
 	int age;
+
+	@Column(nullable = false)
+	LocalDate birthDate;
 
 	@Builder.Default
 	@Enumerated(EnumType.STRING)

@@ -8,4 +8,5 @@
 	</root>
 
 	<logger name="ru.otr.learn.ApplicationRunner" level="DEBUG"/>
+	<logger name="ru.otr.learn.http" level="DEBUG"/>
 </configuration>

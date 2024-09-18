@@ -1,0 +1,17 @@
+package ru.otr.learn.configuration;
+
+
+import org.jetbrains.annotations.NotNull;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.convert.Jsr310Converters;
+import org.springframework.format.FormatterRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class WebConfiguration implements WebMvcConfigurer {
+
+	@Override
+	public void addFormatters(@NotNull FormatterRegistry registry) {
+		registry.addConverter(Jsr310Converters.StringToLocalDateConverter.INSTANCE);
+	}
+}
