@@ -12,7 +12,10 @@
     <!-- Форма для регистрации пользователя -->
     <form th:action="@{/users/register}" method="post" th:object="${user}">
         <label for="login">Логин:</label>
-        <input type="text" id="login" name="login" th:field="*{login}" required/><br>
+        <input type="text" id="login" name="login" th:field="*{username}" required/><br>
+
+        <label for="sourcePassword">Пароль:</label>
+        <input type="password" id="sourcePassword" name="sourcePassword" required/><br>
 
         <label for="name">Имя:</label>
         <input type="text" id="name" name="name" th:field="*{name}" required/><br>

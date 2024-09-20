@@ -1,8 +1,10 @@
 package ru.otr.learn.http.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.groups.Default;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +19,8 @@ import ru.otr.learn.exception.UserNotFoundException;
 import ru.otr.learn.service.CompanyService;
 import ru.otr.learn.service.UserService;
 import ru.otr.learn.utils.Utils;
+import ru.otr.learn.validation.group.CreateAction;
+import ru.otr.learn.validation.group.UpdateAction;
 
 import java.util.List;
 
@@ -44,6 +48,7 @@ public class UserController {
 	}
 
 	// http://localhost:8080/users/1
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@GetMapping("/{id}")
 	public ModelAndView findById(ModelAndView modelAndView, @PathVariable("id") Long id, HttpServletRequest request) {
 		log.debug("Session ID: {}", request.getSession().getId());
@@ -70,7 +75,7 @@ public class UserController {
 	}
 
 	@PostMapping("/register")
-	public String createUser(@ModelAttribute @Validated UserCreateEditDto userReadDto,
+	public String createUser(@ModelAttribute @Validated({Default.class, CreateAction.class}) UserCreateEditDto userReadDto,
 							 BindingResult bindingResult, // Ставить перед RedirectAttributes
 							 RedirectAttributes redirectAttributes) {
 		if (bindingResult.hasErrors()) {
@@ -84,14 +89,15 @@ public class UserController {
 	}
 
 	@PostMapping("/{id}/edit")
-	public String updateUser(@PathVariable("id") Long id, @ModelAttribute UserCreateEditDto userCreateEditDto) {
+	public String updateUser(@PathVariable("id") Long id,
+							 @ModelAttribute @Validated({Default.class, UpdateAction.class}) UserCreateEditDto userCreateEditDto) {
 		return userService.updateUser(id, userCreateEditDto)
 				.map(user -> "redirect:/users/" + user.getId())
 				.orElseThrow(() -> new UserNotFoundException(id));
 	}
 
 	@PostMapping("/{id}/delete")
-	public String deleteByName(@PathVariable("id") Long id) {
+	public String deleteById(@PathVariable("id") Long id) {
 		if (!userService.deleteUserById(id)) {
 			throw new UserNotFoundException(id);
 		}

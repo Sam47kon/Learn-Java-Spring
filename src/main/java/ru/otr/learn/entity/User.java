@@ -3,12 +3,15 @@ package ru.otr.learn.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.ColumnDefault;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.security.core.GrantedAuthority;
 import ru.otr.learn.entity.chat.UserChat;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 @NamedQueries(
 		@NamedQuery(
@@ -28,12 +31,19 @@ import java.util.Random;
 @ToString(includeFieldNames = false)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User extends AuditingEntity<Long> {
+
+	public static final String DEFAULT_PASSWORD = "{noop}1234";
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
 	@Column(nullable = false, unique = true)
-	String login;
+	String username;
+
+	@Builder.Default
+	@ColumnDefault(value = '\'' + DEFAULT_PASSWORD + '\'')
+	String password = DEFAULT_PASSWORD;
 
 	@Column(nullable = false)
 	String name;
@@ -58,13 +68,20 @@ public class User extends AuditingEntity<Long> {
 	@ToString.Exclude
 	List<UserChat> userChats = new ArrayList<>();
 
-	public enum Role {
-		DEV, MAN, QA;
+	@PrePersist
+	public void prePersist() {
+		if (null == password) {
+			password = DEFAULT_PASSWORD;
+		}
+	}
 
-		static final Random RANDOM = new Random();
+	public enum Role  implements GrantedAuthority {
+		ADMIN, DEV, MAN, QA;
 
-		public static Role getRandom() {
-			return values()[RANDOM.nextInt(values().length)];
+		@Contract(pure = true)
+		@Override
+		public @NotNull String getAuthority() {
+			return name();
 		}
 	}
 }

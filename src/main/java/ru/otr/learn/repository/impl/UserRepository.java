@@ -52,6 +52,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	Optional<User> findFirstByName(String userName);
 
-	Optional<User> findByLogin(String login);
+	Optional<User> findByUsername(String username);
+
+	boolean existsByUsername(String username);
 	// endregion
 }

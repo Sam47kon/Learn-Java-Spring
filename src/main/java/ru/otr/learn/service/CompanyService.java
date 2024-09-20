@@ -12,7 +12,6 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import ru.otr.learn.dto.CompanyDto;
 import ru.otr.learn.dto.CompanyReadDto;
 import ru.otr.learn.entity.Company;
 import ru.otr.learn.listener.entity.EntityEvent;
@@ -43,10 +42,10 @@ public class CompanyService implements ApplicationEventPublisherAware {
 				.toList();
 	}
 
-	public Optional<CompanyDto> getCompanyByName(String companyName) {
+	public Optional<CompanyReadDto> getCompanyByName(String companyName) {
 		return companyRepository.findByName(companyName).map(company -> {
 			applicationEventPublisher.publishEvent(new EntityEvent<>(company, OperationType.READ));
-			return new CompanyDto(company.getId(), company.getName(), company.getUsers());
+			return companyReadMapper.transform(company);
 		});
 	}
 

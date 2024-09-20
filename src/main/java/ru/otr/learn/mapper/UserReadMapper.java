@@ -16,7 +16,7 @@ public class UserReadMapper implements Mapper<User, UserReadDto> {
 	public @NotNull UserReadDto transform(@NotNull User from) {
 		return UserReadDto.builder()
 				.id(from.getId())
-				.login(from.getLogin())
+				.username(from.getUsername())
 				.name(from.getName())
 				.age(from.getAge())
 				.birthDate(from.getBirthDate())

@@ -54,7 +54,7 @@ public class UserRestController {
 
 	@DeleteMapping("/{id}/delete")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteByName(@PathVariable("id") Long id) {
+	public void deleteById(@PathVariable("id") Long id) {
 		if (!userService.deleteUserById(id)) {
 			throw new UserNotFoundException(id);
 		}

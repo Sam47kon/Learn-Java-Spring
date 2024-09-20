@@ -2,7 +2,9 @@ package ru.otr.learn.mapper;
 
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import ru.otr.learn.dto.UserCreateEditDto;
 import ru.otr.learn.entity.Company;
 import ru.otr.learn.entity.User;
@@ -15,28 +17,33 @@ import java.util.Optional;
 public class UserCreateEditMapper implements Mapper<UserCreateEditDto, User> {
 
 	private final CompanyRepository companyRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	@Override
 	public User transform(@NotNull UserCreateEditDto from) {
-		return User.builder()
-				.login(from.getLogin())
-				.name(from.getName())
-				.age(from.getAge())
-				.birthDate(from.getBirthDate())
-				.role(from.getRole())
-				.company(getCompany(from.getCompanyId()))
-				.build();
+		User user = new User();
+		copy(from, user);
+		return user;
 	}
 
 	@Override
-	public User transform(@NotNull UserCreateEditDto userCreateEditDto, @NotNull User user) {
-		user.setLogin(userCreateEditDto.getLogin());
-		user.setName(userCreateEditDto.getName());
-		user.setAge(userCreateEditDto.getAge());
-		user.setBirthDate(userCreateEditDto.getBirthDate());
-		user.setRole(userCreateEditDto.getRole());
-		user.setCompany(getCompany(userCreateEditDto.getCompanyId()));
+	public User transform(@NotNull UserCreateEditDto from, @NotNull User user) {
+		copy(from, user);
 		return user;
+	}
+
+	private void copy(@NotNull UserCreateEditDto from, @NotNull User user) {
+		user.setUsername(from.getUsername());
+		user.setName(from.getName());
+		user.setAge(from.getAge());
+		user.setBirthDate(from.getBirthDate());
+		user.setRole(from.getRole());
+		user.setCompany(getCompany(from.getCompanyId()));
+
+		Optional.ofNullable(from.getSourcePassword())
+				.filter(StringUtils::hasText)
+				.map(passwordEncoder::encode)
+				.ifPresent(user::setPassword);
 	}
 
 	private Company getCompany(Long companyId) {

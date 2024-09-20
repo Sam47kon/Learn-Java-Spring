@@ -5,16 +5,30 @@
     <title>Вход</title>
 </head>
 <body>
-<form action="/login" method="post">
-    <label for="login">Логин:
-        <input id="login" type="text" name="login">
-    </label>
-    <br>
-    <label for="password">Пароль:
-        <input id="password" type="password" name="password">
-    </label>
-    <br>
-    <button type="submit">Войти</button>
-</form>
+<div id="loginDiv">
+    <form th:action="@{/login}" method="post">
+        <div th:if="${param.error}">
+            <p style="color: red">Неправильное имя пользователя или пароль</p>
+        </div>
+
+        <label for="username">Логин:
+            <input id="username" type="text" name="username" required>
+        </label>
+        <br>
+        <label for="password">Пароль:
+            <input id="password" type="password" name="password" required>
+        </label>
+        <br>
+        <button type="submit">Войти</button>
+    </form>
+</div>
+<br>
+
+<div id="registerDiv">
+    <form th:action="@{users/register}" method="get">
+        <button type="submit">Регистрация</button>
+    </form>
+</div>
+
 </body>
 </html>

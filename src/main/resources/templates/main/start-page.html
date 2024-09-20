@@ -5,20 +5,15 @@
     <title>Добро пожаловать!</title>
 </head>
 <body>
-<div>
-    <h1>Привет, Мир!!!</h1>
-    <p th:text="|Идентификатор сессии: ${sessionId}|"/><br>
+<div id="rootDiv">
+    <h1 th:text="|Добро пожаловать, ${username}|" th:if="${username != null}"/>
 
-    <form action="/login" method="get">
-        <button type="submit">Вход в систему</button>
-    </form>
+    <div th:insert="~{fragment/fragment.html::header}"></div>
+
+    <div>
+        <a th:href="@{/users}">Все пользователи</a>
+    </div>
     <br>
-
-    <form action="users/register" method="get">
-        <button type="submit">Регистрация</button>
-    </form>
-    <br>
-
 
     <div>
         <a href="/v3/api-docs">Документация</a><br>
@@ -26,7 +21,14 @@
     <div>
         <a href="/swagger-ui/index.html">Swagger</a><br>
     </div>
+    <br>
 
+    <div id="registerDiv">
+        <form th:action="@{users/register}" method="get">
+            <button type="submit">Добавить нового пользователя</button>
+        </form>
+    </div>
+    <br>
 </div>
 </body>
 </html>

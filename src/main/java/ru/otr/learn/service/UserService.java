@@ -7,6 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otr.learn.bpp.Performance;
@@ -19,6 +23,7 @@ import ru.otr.learn.mapper.UserCreateEditMapper;
 import ru.otr.learn.mapper.UserReadMapper;
 import ru.otr.learn.repository.impl.UserRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +33,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @Transactional(readOnly = true)
-public class UserService implements ApplicationEventPublisherAware {
+public class UserService implements ApplicationEventPublisherAware, UserDetailsService {
 
 	UserRepository userRepository;
 	UserReadMapper userReadMapper;
@@ -49,8 +54,8 @@ public class UserService implements ApplicationEventPublisherAware {
 		return userRepository.findById(id).map(userReadMapper::transform);
 	}
 
-	public Optional<UserReadDto> getUserByLogin(String login) {
-		return userRepository.findByLogin(login).map(user -> {
+	public Optional<UserReadDto> getUserUsername(String login) {
+		return userRepository.findByUsername(login).map(user -> {
 			applicationEventPublisher.publishEvent(new EntityEvent<>(user, OperationType.READ));
 			return userReadMapper.transform(user);
 		});
@@ -64,7 +69,10 @@ public class UserService implements ApplicationEventPublisherAware {
 	}
 
 	@Transactional
-	public UserReadDto createUser(UserCreateEditDto user) {
+	public UserReadDto createUser(@NotNull UserCreateEditDto user) {
+		if (userRepository.existsByUsername(user.getUsername())) {
+			throw new DuplicateKeyException("Такой логин уже существует");
+		}
 		return Optional.of(user)
 				.map(userCreateEditMapper::transform)
 				.map(entity -> {
@@ -102,5 +110,15 @@ public class UserService implements ApplicationEventPublisherAware {
 	@Override
 	public void setApplicationEventPublisher(@NotNull ApplicationEventPublisher applicationEventPublisher) {
 		this.applicationEventPublisher = applicationEventPublisher;
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		return userRepository.findByUsername(username)
+				.map(user -> new org.springframework.security.core.userdetails.User(
+						user.getUsername(),
+						user.getPassword(),
+						Collections.singleton(user.getRole())))
+				.orElseThrow(() -> new UsernameNotFoundException("Пользователь с именем " + username + " не найден"));
 	}
 }

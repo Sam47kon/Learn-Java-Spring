@@ -6,14 +6,23 @@
 </head>
 <body>
 
+<div th:insert="~{fragment/fragment.html::header}"></div>
+
+<div>
+    <a th:href="@{/}">Стартовая страница</a>
+</div>
+<br>
+
 <div th:each="user : ${users}">
     <p th:text="|ID: ${user.getId()}|"></p>
-    <p th:text="|Логин: ${user.getLogin()}|"/>
+    <p th:text="|Логин: ${user.getUsername()}|"/>
     <p th:text="|Имя: ${user.name}|"></p>
     <p th:text="|Возраст: ${user.age}|">age</p>
     <p th:text="|Дата рождения: ${user.birthDate}|"></p>
     <p th:text="|Роль: ${user.role}|"></p>
     <a th:href="@{'/users/' + ${user.getId()}}">Перейти к пользователю</a>
+    <br>
 </div>
+
 </body>
 </html>

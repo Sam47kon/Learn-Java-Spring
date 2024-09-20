@@ -36,7 +36,7 @@ public class InitDatabaseRunner {
 
 	private @NotNull List<User> initUsers() {
 		List<User> users = new ArrayList<>();
-		createUser(users, "sam47kon", "Илья", 28, Role.DEV);
+		createUser(users, "sam47kon", "Илья", 28, Role.ADMIN);
 		createUser(users, "nikita", "Никита", 29, Role.MAN);
 		createUser(users, "alina", "Алина", 30, Role.QA);
 		createUser(users, "igor", "Игорь", 47, Role.DEV);
@@ -55,7 +55,7 @@ public class InitDatabaseRunner {
 
 	private void createUser(@NotNull List<User> users, String login, String name, int age, Role role) {
 		User user = User.builder()
-				.login(login)
+				.username(login)
 				.name(name)
 				.age(age)
 				.birthDate(getRandomDate())

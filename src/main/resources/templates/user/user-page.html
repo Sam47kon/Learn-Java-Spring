@@ -6,10 +6,12 @@
 </head>
 <body>
 
+<div th:insert="~{fragment/fragment.html::header}"></div>
+
 <div>
-    <h1 th:text="|Привет, ${user.name}!|"/>
+    <h1 th:text="|Логин: ${user.getUsername()}|"/>
     <p th:text="|ID: ${user.getId()}|"></p>
-    <p th:text="|Логин: ${user.getLogin()}|"/>
+    <p th:text="|Имя: ${user.name}!|"/>
     <p th:text="|Возраст: ${user.age}|">age</p>
     <p th:text="|Дата рождения: ${user.birthDate}|"></p>
     <p th:text="|Роль: ${user.role}|"></p>
@@ -21,7 +23,7 @@
         <!-- Форма для редактирования пользователя -->
         <form id="editForm" th:action="@{/users/{id}/edit(id=${user.id})}" method="post" style="display:none">
             <label for="login">Логин:</label>
-            <input type="text" id="login" name="login" th:value="${user.login}"/><br>
+            <input type="text" id="login" name="login" th:value="${user.username}"/><br>
 
             <label for="name">Имя:</label>
             <input type="text" id="name" name="name" th:value="${user.name}"/><br>
@@ -60,11 +62,7 @@
     </div>
 
     <div>
-        <a th:href="@{/users}">Все пользователи</a>
-    </div>
-
-    <div>
-        <a th:href="@{/logout}">Выход</a>
+        <a th:href="@{/}">Стартовая страница</a>
     </div>
 </div>
 </body>

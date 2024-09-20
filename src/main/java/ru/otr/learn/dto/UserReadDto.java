@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class UserReadDto {
 
 	Long id;
-	String login;
+	String username;
 	String name;
 	int age;
 	LocalDate birthDate;
