@@ -6,7 +6,7 @@
 </head>
 <body>
 <div id="rootDiv">
-    <h1 th:text="|Добро пожаловать, ${username}|" th:if="${username != null}"/>
+    <h1 th:text="|Добро пожаловать, ${#authentication.name} ${username}|" th:if="${username != null}"/>
 
     <div th:insert="~{fragment/fragment.html::header}"></div>
 

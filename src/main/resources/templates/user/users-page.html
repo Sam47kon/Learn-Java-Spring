@@ -14,7 +14,7 @@
 <br>
 
 <div th:each="user : ${users}">
-    <p th:text="|ID: ${user.getId()}|"></p>
+    <p th:text="|ID: ${user.id}|"></p>
     <p th:text="|Логин: ${user.getUsername()}|"/>
     <p th:text="|Имя: ${user.name}|"></p>
     <p th:text="|Возраст: ${user.age}|">age</p>

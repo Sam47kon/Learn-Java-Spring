@@ -75,7 +75,7 @@ public class User extends AuditingEntity<Long> {
 		}
 	}
 
-	public enum Role  implements GrantedAuthority {
+	public enum Role implements GrantedAuthority {
 		ADMIN, DEV, MAN, QA;
 
 		@Contract(pure = true)

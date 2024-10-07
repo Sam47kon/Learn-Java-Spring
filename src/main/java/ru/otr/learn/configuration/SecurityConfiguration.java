@@ -16,13 +16,19 @@ public class SecurityConfiguration {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http // Настройка безопасности
-				.csrf(AbstractHttpConfigurer::disable) // Отключаем CSRF
-				.authorizeHttpRequests(auth -> auth // Настройка прав доступа
-						.requestMatchers("/admin/**").hasAuthority(User.Role.ADMIN.getAuthority()) // Разрешаем доступ только админам
-						.requestMatchers("/login", "/users/register", "/resources/**", "v3/api-docs/**", "/swagger-ui/**").permitAll() // Разрешаем доступ к странице логина и ресурсам
+		// Настройка безопасности
+		http
+				// Отключаем CSRF
+				.csrf(AbstractHttpConfigurer::disable)
+				// Настройка прав доступа
+				.authorizeHttpRequests(auth -> auth
+						// Разрешаем доступ только админам
+						.requestMatchers("/admin/**").hasAuthority(User.Role.ADMIN.getAuthority())
+						// Разрешаем доступ к странице логина, регистрации и ресурсам
+						.requestMatchers("/login", "/users/register", "/resources/**", "v3/api-docs/**", "/swagger-ui/**").permitAll()
 						//.requestMatchers("/users/*/delete/**").hasAuthority(User.Role.ADMIN.getAuthority()) // Разрешаем удаление только админам
-						.anyRequest().authenticated() // Остальные запросы требуют аутентификации
+						// Остальные запросы требуют аутентификации
+						.anyRequest().authenticated()
 				)
 				//.httpBasic(Customizer.withDefaults()) // Разрешаем HTTP Basic аутентификацию
 				.formLogin(form -> form // Настройка формы логина
@@ -33,7 +39,7 @@ public class SecurityConfiguration {
 				)
 				.logout(logout -> logout // Настройка выхода
 						.logoutUrl("/logout") // Переопределяем URL выхода
-						.logoutSuccessUrl("/login?logout=true") // Указываем URL на случай успешного выхода
+						.logoutSuccessUrl("/") // Указываем URL на случай успешного выхода
 				);
 
 		return http.build();

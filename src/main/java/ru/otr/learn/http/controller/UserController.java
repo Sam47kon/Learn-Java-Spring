@@ -4,7 +4,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.groups.Default;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,8 +45,10 @@ public class UserController {
 	private final CompanyService companyService;
 
 	// http://localhost:8080/users
+	@PostAuthorize("returnObject")
 	@GetMapping
-	public String getAllUsers(Model model) {
+	public String getAllUsers(Model model,  @CurrentSecurityContext SecurityContext securityContext,
+							  @AuthenticationPrincipal UserDetails userDetails) {
 		List<UserReadDto> users = userService.getAllUsers();
 		model.addAttribute(USERS, users);
 		return USERS_PAGE;
